@@ -28,7 +28,7 @@ secret_file = os.path.join(Path(__file__).resolve().parent, 'secret.json')
 with open(secret_file, 'r') as f:
     secrets = json.loads(f.read())
 
-SECRET_KEY = secrets["secret"]
+SECRET_KEY = secrets["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
