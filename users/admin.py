@@ -9,14 +9,12 @@ from users.models import User
 
 
 class UserCreationForm(forms.ModelForm):
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
-    password2 = forms.CharField(
-        label="Password confirmation", widget=forms.PasswordInput
-    )
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ["email",]
+        fields = ('email','name','gender','age',)
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -40,7 +38,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["email", "password", "is_active", "is_admin"]
+        fields = ('email', 'password', 'is_active', 'is_admin',)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -51,30 +49,24 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ["id", "email", "is_admin"]
-    list_filter = ["is_admin"]
-    fieldsets = [
-        (None, {"fields": ["email", "password", "followings"]}),
-        ("Permissions", {"fields": ["is_admin"]}),
-    ]
+    list_display = ('email', 'is_admin')
+    list_filter = ('is_admin',)
+    fieldsets = (
+        (None, {'fields': ('email', 'name', 'gender', 'age', 'password')}),
+        ('Permissions', {'fields': ('is_admin',)}),
+    )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
-    add_fieldsets = [
-        (
-            None,
-            {
-                "classes": ["wide"],
-                "fields": ["email", "password1", "password2"],
-            },
-        ),
-    ]
-    search_fields = ["email"]
-    ordering = ["email"]
-    filter_horizontal = []
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'name', 'gender', 'age', 'password1', 'password2'),
+        }),
+    )
+    search_fields = ('email', 'name', 'gender', 'age',)
+    ordering = ('email', 'name', 'gender', 'age',)
+    filter_horizontal = ()
 
 
-# Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
-# ... and, since we're not using Django's built-in permissions,
-# unregister the Group model from admin.
 admin.site.unregister(Group)
