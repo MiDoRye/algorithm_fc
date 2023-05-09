@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from django.shortcuts import get_object_or_404
+from .models import Post, Comment, PageModel
+from .serializers import PostSerializer, CommentSerializer, PageSerializer
 
 
 class PostListCreateView(APIView):
@@ -100,3 +101,25 @@ class CommentDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
+
+
+# 페이지네이션
+class Pagination(PageNumberPagination):
+    page_size = 10
+    page_query_param = 'page_number'  # Default: 'page'
+    page_size_query_param = 'page_size'  # Default: 'page_size'
+    max_page_size = 100
+
+
+class PageView(APIView):
+    pagination_class = Pagination
+
+    def get(self, request, format=None):
+        queryset = PageModel.objects.all()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = PageSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = PageSerializer(queryset, many=True)
+        return Response(serializer.data)
