@@ -18,10 +18,8 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
 
- # 페이지네이션
 
-
-class PageSerializer(serializers.ModelSerializer):
+class PageSerializer(serializers.ModelSerializer):   # 페이지네이션
     class Meta:
         model = PageModel
         fields = '__all__'

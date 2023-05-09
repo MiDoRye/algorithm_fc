@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PostListCreateView, PostDetailView, CommentListCreateView, CommentDetailView
+from .views import PostListCreateView, PostDetailView, CommentListCreateView, CommentDetailView, PageView
 
 urlpatterns = [
     path('', PostListCreateView.as_view(), name='post_list_create'),
@@ -8,4 +8,5 @@ urlpatterns = [
         CommentListCreateView.as_view(), name='comment_list_create'),
     path('<int:post_id>/comments/<int:comment_id>/',
         CommentDetailView.as_view(), name='comment_detail'),
+    path('', PageView.as_view()),    # 페이지네이션 
 ]
