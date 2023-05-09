@@ -51,7 +51,10 @@ class User(AbstractBaseUser):
     introduction = models.TextField(null=True, default="소개글 입니다.")
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-
+    #'''----------------추가된 부분: 이미지 추가 기능---------------이주한-'''
+    image = models.ImageField(blank=True, upload_to='%Y/%m/%d/')
+    #'''----------------------------------------------------------------'''
+    
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
