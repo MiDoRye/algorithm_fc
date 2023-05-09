@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 
@@ -31,17 +32,28 @@ class PostDetailView(APIView):
 
     def put(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
-        self.check_object_permissions(request, post)
-        serializer = PostSerializer(post, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        if request.user == post.author:
+            serializer = PostSerializer(post, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
+        # serializer = PostSerializer(post, data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        # return Response(serializer.data)
 
     def delete(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
-        self.check_object_permissions(request, post)
-        post.delete()
-        return Response(status=204)
+        # self.check_object_permissions(request, post)
+        if request.user == post.author:
+            post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
 
 class CommentListCreateView(APIView):
@@ -65,14 +77,26 @@ class CommentDetailView(APIView):
 
     def put(self, request, post_id, comment_id):
         comment = get_object_or_404(Comment, pk=comment_id, post=post_id)
-        self.check_object_permissions(request, comment)
-        serializer = CommentSerializer(comment, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        # self.check_object_permissions(request, comment)
+        if request.user == comment.author:
+            serializer = CommentSerializer(comment, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
+        # serializer = CommentSerializer(comment, data=request.data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        # return Response(serializer.data)
 
     def delete(self, request, post_id, comment_id):
         comment = get_object_or_404(Comment, pk=comment_id, post=post_id)
-        self.check_object_permissions(request, comment)
-        comment.delete()
-        return Response(status=204)
+        # self.check_object_permissions(request, comment)
+        if request.user == comment.author:
+            comment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
