@@ -52,7 +52,9 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('email', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'name', 'gender', 'age', 'password')}),
+        #'''----------------추가된 부분: 이미지 추가 기능---------------이주한-'''
+        (None, {'fields': ('email', 'name', 'gender', 'age', 'password', 'image',)}),
+        #'''----------------fields에 "image"를 추가했습니다.------------------'''
         ('Permissions', {'fields': ('is_admin',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
