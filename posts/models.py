@@ -25,5 +25,16 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+      
         return self.content
         # return "{}의 댓글".format(self.author)
+      
+
+
+class PageModel(models.Model):   # 페이지네이션 모델
+    name = models.CharField(max_length=100)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
