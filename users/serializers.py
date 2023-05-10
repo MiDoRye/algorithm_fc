@@ -6,7 +6,6 @@ from posts.serializers import PostSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     user_posts = PostSerializer(many=True, read_only=True)
-    
     class Meta:
         model = User
         fields = "__all__"

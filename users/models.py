@@ -33,6 +33,7 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
+    
     name = models.CharField(max_length=100, default="test_user")
     MALE = "male"
     FEMALE = "female"
@@ -49,6 +50,7 @@ class User(AbstractBaseUser):
     )
     age = models.IntegerField(null=True, default=20)
     introduction = models.TextField(null=True, default="소개글 입니다.")
+    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     #'''----------------추가된 부분: 이미지 추가 기능---------------이주한-'''
