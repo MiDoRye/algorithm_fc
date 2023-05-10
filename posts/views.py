@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination   # 페이지네이�
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Post, Comment, PageModel
-from .serializers import PostSerializer, CommentSerializer, PageSerializer
+from .serializers import PostSerializer, CommentSerializer, PageSerializer, PostDetailSerializer
 
 
 class PostListCreateView(APIView):
@@ -28,13 +28,13 @@ class PostDetailView(APIView):
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
-        serializer = PostSerializer(post)
+        serializer = PostDetailSerializer(post)
         return Response(serializer.data)
 
     def put(self, request, post_id):
         post = get_object_or_404(Post, pk=post_id)
         if request.user == post.author:
-            serializer = PostSerializer(post, data=request.data)
+            serializer = PostDetailSerializer(post, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
