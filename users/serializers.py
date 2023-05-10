@@ -13,7 +13,6 @@ from rest_framework_jwt.settings import api_settings
 
 class UserSerializer(serializers.ModelSerializer):
     user_posts = PostSerializer(many=True, read_only=True)
-    
     class Meta:
         model = User
         fields = "__all__"
@@ -53,9 +52,9 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        #'''----------------추가된 부분: 이미지 추가 기능---------------이주한-'''
+        #'''----------------사용자 상세 페이지 이미지 추가 기능---------------이주한-'''
         fields = ("id", "email", "name", "age", "gender", "introduction", "image")
-        #'''----------------fields에 "image"를 추가했습니다.------------------'''
+        #'''----------------------------------------------------------------------'''
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

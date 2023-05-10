@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
+from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
 from users.serializers import UserSerializer, UserDetailSerializer
 from users.models import User
-from rest_framework.generics import get_object_or_404
+
 
 # ===================================== email 요청 import 추가 =============================
 import traceback
@@ -36,7 +37,6 @@ class UserDetailView(APIView):
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        # print(str(request.user), str(user.email))
         if str(request.user) == user.email:
             serializer = UserDetailSerializer(user, data=request.data)
             if serializer.is_valid():
@@ -94,3 +94,16 @@ class UserActivate(APIView):
             return Response(user.email + '계정이 활성화 되었습니다', status=status.HTTP_200_OK)
         else:
             return Response('사용자를 찾을 수 없습니다', status=status.HTTP_400_BAD_REQUEST)
+
+# 팔로우 view 추가
+class FollowView(APIView):
+    def post(self, request, user_id):
+        you = get_object_or_404(User, id=user_id)
+        me = request.user
+        if me in you.followers.all():
+            you.followers.remove(me)
+            return Response("unfollow했습니다.", status=status.HTTP_200_OK)
+        else:
+            you.followers.add(me)
+            return Response("follow했습니다.", status=status.HTTP_200_OK)
+
