@@ -49,11 +49,11 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'is_admin')
+    list_display = ('id', 'email', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
         #'''----------------추가된 부분: 이미지 추가 기능---------------이주한-'''
-        (None, {'fields': ('email', 'name', 'gender', 'age', 'password', 'image',)}),
+        (None, {'fields': ('email', 'name', 'gender', 'age', 'password', 'image', 'followings')}),
         #'''----------------fields에 "image"를 추가했습니다.------------------'''
         ('Permissions', {'fields': ('is_admin',)}),
     )
