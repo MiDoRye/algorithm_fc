@@ -103,6 +103,20 @@ class CommentDetailView(APIView):
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
 
+
+#'''--------------------------추가된 부분: 좋아요 기능-------------------이주한-'''
+class LikeView(APIView):
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, pk=post_id)
+        print(request.user)
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            return Response("좋아요 취소", status=status.HTTP_200_OK)
+        else:
+            post.likes.add(request.user)
+            return Response("좋아요", status=status.HTTP_200_OK)
+#'''--------------------------------------------------------------------------'''
+
 # 페이지네이션
 class Pagination(PageNumberPagination):
     page_size = 10
@@ -123,3 +137,4 @@ class PageView(APIView):
 
         serializer = PageSerializer(queryset, many=True)
         return Response(serializer.data)
+
