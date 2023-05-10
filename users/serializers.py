@@ -35,7 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         # email을 생성하여 보내는 부분
         message = f"{user.email}님 링크를 클릭해 계정을 활성화 해주세요\n"
-        # message += f"http://127.0.0.1:8000{reverse('user:activate', kwargs={'uidb64': urlsafe_base64_encode(force_bytes(user.pk)), 'token': account_activation_token.make_token(user)})}"
         message += f"http://127.0.0.1:8000{reverse('user:activate', kwargs={'uidb64': urlsafe_base64_encode(force_bytes(user.pk)), 'token': token})}"
         email = EmailMessage('test', message, to=[user.email])
         email.send()
