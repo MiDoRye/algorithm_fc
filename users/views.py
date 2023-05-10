@@ -27,7 +27,6 @@ class UserDetailView(APIView):
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        # print(str(request.user), str(user.email))
         if str(request.user) == user.email:
             serializer = UserDetailSerializer(user, data=request.data)
             if serializer.is_valid():
