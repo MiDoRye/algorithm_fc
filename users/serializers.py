@@ -15,7 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
     user_posts = PostSerializer(many=True, read_only=True)
     class Meta:
         model = User
-        fields = "__all__"
+        #-----------------------------수정 - 사용자 정보 조회시 조회될 필드들 수정------------------------이주한---
+        fields = ("id", "email", "name", "age", "gender", "introduction", "image", "user_posts", "followings")
 
 
     def create(self, validated_data):

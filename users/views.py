@@ -95,15 +95,18 @@ class UserActivate(APIView):
         else:
             return Response('사용자를 찾을 수 없습니다', status=status.HTTP_400_BAD_REQUEST)
 
-# 팔로우 view 추가
+# 팔로우 view 추가 -이찬주-
 class FollowView(APIView):
     def post(self, request, user_id):
         you = get_object_or_404(User, id=user_id)
         me = request.user
-        if me in you.followers.all():
-            you.followers.remove(me)
-            return Response("unfollow했습니다.", status=status.HTTP_200_OK)
+        #-----수정 - 팔로우 하려는 사람이 본인이라면 못하게 기능 수정------------------------이주한--- 
+        if me == you.email:
+            if me in you.followers.all():
+                you.followers.remove(me)
+                return Response("unfollow했습니다.", status=status.HTTP_200_OK)
+            else:
+                you.followers.add(me)
+                return Response("follow했습니다.", status=status.HTTP_200_OK)
         else:
-            you.followers.add(me)
-            return Response("follow했습니다.", status=status.HTTP_200_OK)
-
+            return Response('본인을 팔로우 하는 사람이 어딨어?!', status=status.HTTP_400_BAD_REQUEST)
