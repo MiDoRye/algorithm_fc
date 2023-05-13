@@ -5,31 +5,35 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from users.serializers import UserSerializer, UserDetailSerializer
 from users.models import User
-
-
 # ===================================== email 요청 import 추가 =============================
 import traceback
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
-
 import jwt
 from django.conf import settings
 secret_key = settings.SECRET_KEY
 
 
 class SignUpView(APIView):
+    """
+    사용자 가입 기능을 정의한 APIView 클래스입니다. POST 요청을 처리하며, 유효한 시리얼라이저인 경우 새로운 사용자를 생성합니다.
+    """
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message":"가입완료!"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "가입완료!"}, status=status.HTTP_201_CREATED)
         else:
-            return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(APIView):
+    """
+    사용자에 대한 CRUD 기능을 구현하는 APIView 입니다.
+    """
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user)
@@ -64,16 +68,18 @@ class UserDetailView(APIView):
         # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# ============================================ 사용자 이메일 인증 ============================================
-
 class UserActivate(APIView):
+    """
+    사용자 계정 활성화를 위한 APIView를 구현한 코드입니다.
+    """
+
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, uidb64, token):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
         try:
@@ -95,12 +101,15 @@ class UserActivate(APIView):
         else:
             return Response('사용자를 찾을 수 없습니다', status=status.HTTP_400_BAD_REQUEST)
 
-# 팔로우 view 추가 -이찬주-
+
 class FollowView(APIView):
+    """
+    사용자간의 팔로우/언팔로우 기능을 구현하는 FollowView 클래스를 정의합니다.
+    """
+
     def post(self, request, user_id):
         you = get_object_or_404(User, id=user_id)
         me = request.user
-        #-----수정 - 팔로우 하려는 사람이 본인이라면 못하게 기능 수정------------------------이주한--- 
         if me == you.email:
             if me in you.followers.all():
                 you.followers.remove(me)
