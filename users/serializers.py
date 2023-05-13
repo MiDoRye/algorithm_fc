@@ -13,11 +13,12 @@ from rest_framework_jwt.settings import api_settings
 
 class UserSerializer(serializers.ModelSerializer):
     user_posts = PostSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
-        #-----------------------------수정 - 사용자 정보 조회시 조회될 필드들 수정------------------------이주한---
-        fields = ("id", "email", "name", "age", "gender", "introduction", "image", "user_posts", "followings")
 
+        fields = ("id", "email", "name", "age", "gender",
+                  "introduction", "image", "user_posts", "followings")
 
     def create(self, validated_data):
         user = super().create(validated_data)
@@ -40,8 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
         email.send()
 
         return validated_data
-    
-        
+
     def update(self, validated_data):
         user = super().create(validated_data)
         password = user.password
@@ -53,9 +53,10 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        #'''----------------사용자 상세 페이지 이미지 추가 기능---------------이주한-'''
-        fields = ("id", "email", "name", "age", "gender", "introduction", "image")
-        #'''----------------------------------------------------------------------'''
+
+        fields = ("id", "email", "name", "age",
+                  "gender", "introduction", "image")
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
