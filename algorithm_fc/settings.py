@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'users',
     'posts',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -53,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'algorithm_fc.urls'
@@ -188,3 +191,5 @@ EMAIL_HOST_USER = secrets["EMAIL_HOST_USER"]
 EMAIL_HOST_PASSWORD = secrets["EMAIL_HOST_PASSWORD"]
 SERVER_EMAIL = 'nbcaone@gmail.com'
 DEFAULT_FROM_MAIL = 'id'
+
+CORS_ORIGIN_ALLOW_ALL = True  # 모든 도메인에서 접근 가능하도록 설정합니다.

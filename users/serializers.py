@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from users.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from posts.serializers import PostSerializer
+from posts.serializers import PostSerializer, CommentSerializer
 
 
 from django.utils.http import urlsafe_base64_encode
@@ -35,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
         # email을 생성하여 보내는 부분
         message = f"{user.email}님 링크를 클릭해 계정을 활성화 해주세요\n"
         message += f"http://127.0.0.1:8000{reverse('user:activate', kwargs={'uidb64': urlsafe_base64_encode(force_bytes(user.pk)), 'token': token})}"
-        email = EmailMessage('test', message, to=[user.email])
+        email = EmailMessage('User Authentication Email', message, to=[user.email])
         email.send()
 
         return validated_data
@@ -65,3 +65,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['gender'] = user.gender
         token['age'] = user.age
         return token
+    
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    followers = serializers.StringRelatedField(many=True)
+    followings = serializers.StringRelatedField(many=True)
+    user_posts = PostSerializer(many=True, read_only=True)
+    user_comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ("image", "email", "introduction", "age", "gender", "followers", "followings", "user_posts", "user_comments")

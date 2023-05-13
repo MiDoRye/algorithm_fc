@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
-from users.serializers import UserSerializer, UserDetailSerializer
+from users.serializers import UserSerializer, UserDetailSerializer, UserProfileSerializer
 from users.models import User
 
 
@@ -28,17 +28,20 @@ class SignUpView(APIView):
 
 
 class UserDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        serializer = UserSerializer(user)
+        serializer = UserProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, user_id):
+        permission_classes = [permissions.IsAuthenticated]
         user = get_object_or_404(User, id=user_id)
+        
         if str(request.user) == user.email:
             serializer = UserDetailSerializer(user, data=request.data)
+            # serializer = UserDetailSerializer(user)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -46,22 +49,15 @@ class UserDetailView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
-        # serializer = UserDetailSerializer(user, data=request.data)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data, status=status.HTTP_200_OK)
-        # else:
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, user_id):
+        permission_classes = [permissions.IsAuthenticated]
         user = get_object_or_404(User, id=user_id)
         if str(request.user) == user.email:
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
-        # user.delete()
-        # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # ============================================ 사용자 이메일 인증 ============================================
@@ -94,7 +90,7 @@ class UserActivate(APIView):
             return Response(user.email + '계정이 활성화 되었습니다', status=status.HTTP_200_OK)
         else:
             return Response('사용자를 찾을 수 없습니다', status=status.HTTP_400_BAD_REQUEST)
-
+                
 # 팔로우 view 추가
 class FollowView(APIView):
     def post(self, request, user_id):
