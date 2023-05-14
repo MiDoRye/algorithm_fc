@@ -76,6 +76,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
         return data
 
+
     def create(self, validated_data):
         user_name = validated_data["user_name"]
         email = validated_data["email"]
@@ -102,16 +103,20 @@ class SignUpSerializer(serializers.ModelSerializer):
         email = EmailMessage('test', message, to=[user.email])
         email.send()
 
+
         # 새로운 사용자의 프로필을 생성하기 위해 UserProfile 모델에서 UserProfile 인스턴스를 생성합니다.
         UserProfile.objects.create(user=user)
         
         return validated_data
+
+    
 
 
 # 회원정보 수정에 필요한 serializer
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+
         fields = ("user_name",)
         extra_kwargs = {"user_name": {"error_messages": {"required": False, "blank": False,}},}
 
@@ -280,5 +285,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['email'] = user.email
+
         token['user_name'] = user.user_name
         return token
+
