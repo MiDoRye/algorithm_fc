@@ -12,6 +12,7 @@ from django.urls import reverse
 from rest_framework_jwt.settings import api_settings
 
 
+
 # 회원가입에 필요한 serializer
 class SignUpSerializer(serializers.ModelSerializer):
     re_password = serializers.CharField(
@@ -77,6 +78,9 @@ class SignUpSerializer(serializers.ModelSerializer):
         return data
 
 
+        fields = ("id", "email", "name", "age", "gender",
+                  "introduction", "image", "user_posts", "followings")
+
     def create(self, validated_data):
         user_name = validated_data["user_name"]
         email = validated_data["email"]
@@ -109,7 +113,8 @@ class SignUpSerializer(serializers.ModelSerializer):
         
         return validated_data
 
-    
+
+
 
 
 # 회원정보 수정에 필요한 serializer
@@ -265,6 +270,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         if password_validator(password):
             raise serializers.ValidationError(detail={"password": "비밀번호는 8자 이상의 영문 대소문자와 숫자, 특수문자를 포함하여야 합니다!"})
 
+
         # 비밀번호 유효성 검사
         if password_pattern(password):
             raise serializers.ValidationError(detail={"password": "비밀번호는 연속해서 3자리 이상 동일한 영문,숫자,특수문자 사용이 불가합니다!"})
@@ -286,6 +292,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['email'] = user.email
 
+
         token['user_name'] = user.user_name
         return token
+
 

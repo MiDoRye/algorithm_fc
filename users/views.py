@@ -4,8 +4,10 @@ from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
 
+
 from users.serializers import SignUpSerializer, UserUpdateSerializer, ChangePasswordSerializer, MyPageSerializer, MyPageUpdateSerializer, UserFeedPageSerializer
 from users.models import User, UserProfile
+
 
 
 
@@ -14,7 +16,9 @@ import traceback
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 
+
 from django.utils import timezone
+
 
 import jwt
 from django.conf import settings
@@ -23,11 +27,13 @@ secret_key = settings.SECRET_KEY
 
 class SignUpView(APIView):
 
+
     # 회원가입
 
     """
     사용자 가입 기능을 정의한 APIView 클래스입니다. POST 요청을 처리하며, 유효한 시리얼라이저인 경우 새로운 사용자를 생성합니다.
     """
+
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
@@ -42,6 +48,7 @@ class UserDetailView(APIView):
     사용자에 대한 CRUD 기능을 구현하는 APIView 입니다.
     """
     permission_classes = [permissions.IsAuthenticated]
+
 
     # 사용자 정보 수정
     def put(self, request, user_id):
@@ -68,8 +75,6 @@ class UserDetailView(APIView):
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
-
-
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -86,6 +91,7 @@ class ChangePasswordView(APIView):
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 # ============================================ 사용자 이메일 인증 ============================================
+
 class UserActivate(APIView):
     """
     사용자 계정 활성화를 위한 APIView를 구현한 코드입니다.
@@ -152,6 +158,7 @@ class UserFeedPageView(APIView):
 
 
 # 팔로우 view 추가 -이찬주-
+
 
 class FollowView(APIView):
     """

@@ -8,6 +8,7 @@ class UserManager(BaseUserManager):
     """
     BaseUserManager 클래스를 상속받아 UserManager 클래스를 정의합니다.
     """
+
     def create_user(self, user_name, email, password=None):
          # email 값을 소문자로 정규화한 후, 모델 객체를 생성합니다.
         if not user_name:
@@ -15,6 +16,7 @@ class UserManager(BaseUserManager):
         # email 값이 없으면 에러를 발생시킵니다.
         if not email:
             raise ValueError('이메일 주소를 입력해주세요!')
+
         user = self.model(
             user_name = user_name,
             email=self.normalize_email(email),
@@ -28,7 +30,9 @@ class UserManager(BaseUserManager):
     # 슈퍼 유저 생성 메소드를 정의합니다.
 
 
+
     def create_superuser(self, user_name, email, password=None):
+
         # 일반 유저 생성 메소드를 호출하여 유저 객체를 생성합니다.
         user = self.create_user(
             user_name=user_name,
@@ -51,6 +55,7 @@ class User(AbstractBaseUser):
     last_password_changed = models.DateTimeField("비밀번호 마지막 변경일", auto_now=True)
     withdraw = models.BooleanField("회원 비활성화", default=False)
     withdraw_at = models.DateTimeField("계정 탈퇴일", null=True)
+  
 
     objects = UserManager()
 
