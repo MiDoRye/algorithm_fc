@@ -18,13 +18,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     # author = serializers.ReadOnlyField(source='author.username')
-    author = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
     # comments = CommentSerializer(many=True, read_only=True)
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
 
     def get_author(self, obj):
-        return obj.author.email
+        return obj.author.user_profile.nickname
 
     def get_likes_count(self, obj):
         return obj.likes.count()
@@ -35,7 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("pk", "title", "content", "updated_at",
-                  "author", "likes_count", "comments_count")
+                  "nickname", "likes_count", "comments_count")
 # -------------------------------------------------------------------------------------------------------------------------------
 
 

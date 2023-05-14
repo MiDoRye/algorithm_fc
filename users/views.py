@@ -3,14 +3,15 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
-from users.serializers import UserSerializer, UserDetailSerializer
-from users.models import User
+from users.serializers import SignUpSerializer, UserUpdateSerializer, ChangePasswordSerializer, MyPageSerializer, MyPageUpdateSerializer, UserFeedPageSerializer
+from users.models import User, UserProfile
 
 
 # ===================================== email 요청 import 추가 =============================
 import traceback
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
+from django.utils import timezone
 
 import jwt
 from django.conf import settings
@@ -18,8 +19,9 @@ secret_key = settings.SECRET_KEY
 
 
 class SignUpView(APIView):
+    # 회원가입
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"message":"가입완료!"}, status=status.HTTP_201_CREATED)
@@ -29,16 +31,12 @@ class SignUpView(APIView):
 
 class UserDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    
-    def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # 사용자 정보 수정
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        if str(request.user) == user.email:
-            serializer = UserDetailSerializer(user, data=request.data)
+        if request.user.email == user.email:
+            serializer = UserUpdateSerializer(user, data=request.data, context={"request": request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -46,24 +44,35 @@ class UserDetailView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
-        # serializer = UserDetailSerializer(user, data=request.data)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data, status=status.HTTP_200_OK)
-        # else:
-        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # 사용자 비활성화
     def delete(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        if str(request.user) == user.email:
-            user.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user.email == user.email:
+            user.withdraw = True
+            user.withdraw_at = timezone.now()
+            user.is_active = False
+            user.save()
+            return Response({"message": "사용자 계정이 비활성화 되었습니다!"}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
-        # user.delete()
-        # return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    # 비밀번호 변경
+    def put(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        if request.user.email == user.email:
+            serializer = ChangePasswordSerializer(user, data=request.data, context={"request": request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"message": "비밀번호 변경이 완료되었습니다!"}, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 # ============================================ 사용자 이메일 인증 ============================================
 
 class UserActivate(APIView):
@@ -94,6 +103,37 @@ class UserActivate(APIView):
             return Response(user.email + '계정이 활성화 되었습니다', status=status.HTTP_200_OK)
         else:
             return Response('사용자를 찾을 수 없습니다', status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyPageView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    # 마이 페이지
+    def get(self, request):
+        user_profile = get_object_or_404(UserProfile)
+        serializer = MyPageSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 마이 페이지 편집
+    def put(self, request):
+        user_profile = get_object_or_404(UserProfile)
+        serializer = MyPageUpdateSerializer(user_profile, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "프로필이 수정 되었습니다!"}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserFeedPageView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    # 사용자 피드 페이지
+    def get(self, request, nickname):
+        user_profile = get_object_or_404(UserProfile, nickname=nickname)
+        serializer = UserFeedPageSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 # 팔로우 view 추가 -이찬주-
 class FollowView(APIView):
